@@ -1,0 +1,9 @@
+{
+  "name": "Mi App",
+  "short_name": "MiApp",
+  "description": "Una aplicación de ejemplo",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/"
+}
