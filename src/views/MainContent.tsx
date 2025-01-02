@@ -89,7 +89,7 @@ export default function MainContent() {
           </div>
         </div>
 
-        <div className="flex flex-col items-start justify-center w-full mx-2 my-4 gap-4">
+        <div className="flex flex-col items-start justify-center w-full ml-10 my-4 gap-4">
           <div className="flex items-center text-sm w-full">
             <div className="flex gap-1 mr-20">
               <button
