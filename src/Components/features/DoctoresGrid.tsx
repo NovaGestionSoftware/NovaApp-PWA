@@ -1,7 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { obtenerDoctores } from "../../services/TurnosService";
+import { useState } from "react";
 
 export default function DoctoresGrid() {
+  const [selectedRow, setSelectedRow] = useState<number | null>(null);
+
+  const handleRowClick = (iddoctor: number) => {
+    setSelectedRow(iddoctor === selectedRow ? null : iddoctor); // Toggle la selección
+  };
+
+  console.log(selectedRow);
+
   const { data: dataDoctores } = useQuery({
     queryKey: ["doctores"],
     queryFn: obtenerDoctores,
@@ -22,7 +31,10 @@ export default function DoctoresGrid() {
             dataDoctores.map((doctor: any) => (
               <tr
                 key={doctor.iddoctor}
-                className="hover:bg-blue-100 hover:cursor-pointer transition"
+                className={`transition hover:bg-blue-100 hover:cursor-pointer ${
+                  selectedRow === doctor.iddoctor ? "bg-blue-100" : ""
+                }`}
+                onClick={() => handleRowClick(doctor.iddoctor)}
               >
                 <td className="text-end border border-gray-300 px-4 py-1">{doctor.iddoctor}</td>
                 <td className="border border-gray-300 px-4 py-1">{doctor.ndoctor}</td>

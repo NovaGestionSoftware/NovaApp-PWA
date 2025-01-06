@@ -1,24 +1,68 @@
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { format } from "date-fns";
 import { addDays } from "date-fns";
 import { GrEdit } from "react-icons/gr";
 import { ImCloudDownload } from "react-icons/im";
-import DoctoresGrid from "../Components/features/DoctoresGrid";
-import TurnosHorariosGrid from "../Components/features/TurnosHorariosGrid";
-import AltaTurnoModal from "../Components/features/modals/AltaTurnoModal";
-import FacturacionModal from "../Components/features/modals/FacturacionModal";
+import { obtenerDoctores, obtenerTurnos } from "../../services/TurnosService";
+import FacturacionModal from "../../Components/features/modals/FacturacionModal";
+import AltaTurnoModal from "../../Components/features/modals/AltaTurnoModal";
 
-export default function MainContent() {
+const data = [
+  { id: 1, horaIni: "16:00", horaFin: "16:19", estado: "", paciente: "ALVAREZ, Tomas", obs: "" },
+  { id: 2, horaIni: "16:20", horaFin: "16:39", estado: "", paciente: "", obs: "" },
+  { id: 3, horaIni: "16:40", horaFin: "16:59", estado: "", paciente: "", obs: "" },
+  { id: 4, horaIni: "17:00", horaFin: "17:19", estado: "", paciente: "", obs: "" },
+  { id: 5, horaIni: "17:20", horaFin: "17:39", estado: "", paciente: "", obs: "" },
+  { id: 6, horaIni: "17:40", horaFin: "17:59", estado: "", paciente: "", obs: "" },
+  { id: 7, horaIni: "18:00", horaFin: "18:19", estado: "", paciente: "", obs: "" },
+  { id: 8, horaIni: "18:20", horaFin: "18:39", estado: "", paciente: "", obs: "" },
+  { id: 9, horaIni: "18:40", horaFin: "18:59", estado: "", paciente: "", obs: "" },
+  { id: 10, horaIni: "19:00", horaFin: "19:19", estado: "", paciente: "", obs: "" },
+  { id: 11, horaIni: "19:20", horaFin: "19:39", estado: "", paciente: "", obs: "" },
+  { id: 12, horaIni: "19:40", horaFin: "19:59", estado: "", paciente: "", obs: "" },
+  { id: 13, horaIni: "20:00", horaFin: "20:19", estado: "", paciente: "", obs: "" },
+];
+
+export default function Turnos() {
   const navigate = useNavigate();
+  const convertirFecha = (fecha: Date) => {
+    const year = fecha.getFullYear();
+    const month = String(fecha.getMonth() + 1).padStart(2, "0");
+    const day = String(fecha.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [doctorSelected, setDoctorSelected] = useState<number | null>(null);
   const [mostrarModalPresentacion, setMostrarModalPresentacion] = useState(false);
-
+  const fechaFormateada = convertirFecha(selectedDate);
   const locale = "es-ES";
+
+  console.log("Iddoctor: ", doctorSelected, " ", "Fecha: ", fechaFormateada);
+
+  const { data: dataDoctores } = useQuery({
+    queryKey: ["doctores"],
+    queryFn: obtenerDoctores,
+    enabled: true,
+    initialData: [],
+  });
+
+  const { data: dataTurnos } = useQuery({
+    queryKey: ["turnos"],
+    queryFn: () => obtenerTurnos({ doctorSelected, fechaFormateada }),
+    enabled: doctorSelected !== null && fechaFormateada !== "",
+  });
+
+  console.log(dataTurnos);
 
   const handleDateChange = (days: any) => {
     setSelectedDate(addDays(selectedDate, days));
+  };
+
+  const handleRowClick = (iddoctor: number) => {
+    setDoctorSelected(iddoctor === doctorSelected ? null : iddoctor);
   };
 
   const handlePresentacion = () => {
@@ -85,7 +129,46 @@ export default function MainContent() {
           </div>
 
           <div className="p-1 mt-2">
-            <DoctoresGrid />
+            <div className="overflow-y-auto h-96 border border-gray-300 rounded">
+              <table className="min-w-full text-sm border-collapse">
+                <thead>
+                  <tr>
+                    <th className="border border-gray-300 px-4 py-1 text-left">ID</th>
+                    <th className="border border-gray-300 py-1 text-center min-w-64">
+                      Profesional
+                    </th>
+                    <th className="border border-gray-300 py-1 text-center min-w-44">
+                      Especialidad
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dataDoctores && dataDoctores.length > 0 ? (
+                    dataDoctores.map((doctor: any) => (
+                      <tr
+                        key={doctor.iddoctor}
+                        className={`transition hover:bg-blue-100 hover:cursor-pointer ${
+                          doctorSelected === doctor.iddoctor ? "bg-blue-100 font-semibold" : ""
+                        }`}
+                        onClick={() => handleRowClick(doctor.iddoctor)}
+                      >
+                        <td className="text-end border border-gray-300 px-4 py-1">
+                          {doctor.iddoctor}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-1">{doctor.ndoctor}</td>
+                        <td className="border border-gray-300 px-4 py-1">{doctor.nespecialidad}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={3} className="text-center py-2">
+                        Cargando doctores...
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -137,7 +220,32 @@ export default function MainContent() {
           </div>
 
           <div className="p-1">
-            <TurnosHorariosGrid />
+            <div className="overflow-y-auto h-96 border border-gray-300 rounded">
+              <table className="min-w-full text-sm border-collapse">
+                <thead>
+                  <tr>
+                    <th className="border border-gray-300 px-4 py-1 text-left">ID</th>
+                    <th className="border border-gray-300 py-1 text-center">Hora Ini</th>
+                    <th className="border border-gray-300 py-1 text-center">Hora Fin</th>
+                    <th className="border border-gray-300 py-1 text-center min-w-44">Estado</th>
+                    <th className="border border-gray-300 py-1 text-center min-w-44">Paciente</th>
+                    <th className="border border-gray-300 py-1 text-center min-w-44">Obs</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.map((item) => (
+                    <tr key={item.id} className="hover:bg-blue-100 hover:cursor-pointer transition">
+                      <td className="text-end border border-gray-300 px-4 py-1">{item.id}</td>
+                      <td className="border border-gray-300 px-4 py-1">{item.horaIni}</td>
+                      <td className="border border-gray-300 px-4 py-1">{item.horaFin}</td>
+                      <td className="border border-gray-300 px-4 py-1">{item.estado}</td>
+                      <td className="border border-gray-300 px-4 py-1">{item.paciente}</td>
+                      <td className="border border-gray-300 px-4 py-1">{item.obs}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
