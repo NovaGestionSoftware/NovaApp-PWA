@@ -62,7 +62,7 @@ export default function SideBar({ open, setOpen }: SideBarProps) {
             open ? "opacity-100 scale-100 max-w-full" : "opacity-0 scale-75 max-w-0"
           }`}
         >
-          User
+          Mitra Med
         </span>
         {!usuarioIniciado || Object.keys(usuarioIniciado).length === 0 ? (
           <>
@@ -70,7 +70,7 @@ export default function SideBar({ open, setOpen }: SideBarProps) {
           </>
         ) : (
           <div className="w-14 h-14 rounded-full bg-white flex justify-center items-center p-2">
-            <img width={200} height={200} alt="User Logo" src={"/novaLogo.png"} />
+            <img width={200} height={200} alt="User Logo" src={"/mitra-med-logo.ico"} />
           </div>
         )}
 
@@ -94,7 +94,7 @@ export default function SideBar({ open, setOpen }: SideBarProps) {
             <Link
               to={menu.href}
               className={`text-white text-base flex items-center gap-x-2 cursor-pointer p-2 rounded-l-md rounded-r-none mt-2
-              hover:bg-tremor-light-white hover:-translate-y-1 duration-300 overflow-hidden ${
+              hover:bg-[#FFFFFF2B] hover:-translate-y-1 duration-300 overflow-hidden ${
                 menu.href === location.pathname ? "bg-tremor-light-white -translate-y-1 " : ""
               }`}
             >
